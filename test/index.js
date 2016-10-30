@@ -6,7 +6,7 @@ const oneAuthor = require('./one-author.json')
 See https://wiki.creativecommons.org/wiki/Best_practices_for_attribution
 */
 
-const tested = objectAuditTrail();
+const tested = objectAuditTrail({baseUrl: 'http:/website.com'});
 
 test('objectAuditTrail should detect the shorter of two words', (t) => {
   t.plan(2)
@@ -88,28 +88,18 @@ test('objectAuditTrail should provide markdown attribution', (t) => {
   const actual = tested.getAttributionAsMarkdown([oneAuthor])
   t.equal(actual,
   '[London gathering](/comic-script/AAA) by [John Smith](/john-smith)'
-  + 'is licensed under '+
-  '[CC BY 4.0](https://creativecommons.org/licenses/by/2.0/)',
+  + ' is licensed under '+
+  '[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)',
   'as markdown')
 
 })
 
-test('objectAuditTrail should provide short markdown attribution', (t) => {
-  t.plan(1)
-  const actual = tested.getAttributionAsMarkdown([oneAuthor], 35)
-  t.equal(actual,
-  '[Comic Script](/comic-script/AAA) by [John Smith](/john-smith)'
-  + ' / '+
-  '[CC BY](https://creativecommons.org/licenses/by/2.0/)',
-  'as short markdown')
-
-})
 
 test('objectAuditTrail should provide twitter attribution', (t) => {
   t.plan(1)
   const actual = tested.getTwitterAttribution([oneAuthor])
   t.equal(actual,
-  'London gathering by @johnsmith #CCBY : '+
+  'London gathering by @johnsmith #CCBY: '+
   'http:/website.com/comic-script/AAA',
   'as twitter')
 
