@@ -45,17 +45,6 @@ export default function (conf) {
     return attribution;
   }
 
-  const getIdealTwitterAttribution = (history) => {
-    const last = _.last(history);
-    const headline = last.headline;
-    const url = `${conf.baseUrl}${last.url}`;
-    const author = _.defaultTo(last.author['twitter:username'], last.author.name);
-    const license = last.license['twitter:hastag'];
-    const under = isLicensedUnder;
-    const attribution = `${headline} by ${author} ${license}: ${url}`;
-    return attribution;
-  }
-
   const getShorterAttributionAsText = (history, limit) => {
     const last = _.last(history);
     const author = shorterOfTwo(last.author.name, last.author.alternateName);
@@ -95,7 +84,18 @@ export default function (conf) {
   }
 
   const getTwitterAttribution = (history) => {
-    return getIdealTwitterAttribution(history);
+    const last = _.last(history);
+    const headline = largestPossible([
+      last.headline,
+      last.alternativeHeadline,
+      last.typeOfWork.name
+    ], 60);
+    const url = `${conf.baseUrl}${last.url}`;
+    const defAuthor = shorterOfTwo(last.author.name, last.author.alternateName);
+    const author = _.defaultTo(last.author['twitter:username'], defAuthor);
+    const license = last.license['twitter:hastag'];
+    const attribution = `${headline} by ${author} ${license}: ${url}`;
+    return attribution;
   }
 
   const objectAuditTrail = {
