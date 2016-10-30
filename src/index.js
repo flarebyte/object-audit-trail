@@ -20,6 +20,28 @@ export default function (conf) {
     return sizeOrZero(largest) === 0 ? null : largest;
   }
 
+  const onlyMajor = (value) => ! _.includes(
+      conf.ignoreTypeOfContribution ,
+      value.typeOfContribution.name)
+
+  const listAuthors = (history) => _.uniqBy(_.map(history, 'author'), 'name');
+  const onlyMajorContributions = (history) => _.filter(history, onlyMajor);
+
+  const copyeditedContributionAfter = (history, url) => {
+    var edition = null;
+    for (var i =0; i< history.length; i++) {
+      const ed = history[i];
+      if (ed.url === url) {
+        edition = ed;
+        continue;
+      }
+      if (edition === null) continue;
+      if (onlyMajor(ed)) break;
+      edition = ed;
+    };
+    return edition;
+  }
+
   const isLicensedUnder = " is licensed under "
   const getIdealAttributionAsText = (history) => {
     const last = _.last(history);
@@ -71,9 +93,33 @@ export default function (conf) {
     return attribution;
   }
 
+  const getOptimizedAttributionAsText = (contrib, conf) => {
+    const author = shorterOfTwo(contrib.author.name, contrib.author.alternateName);
+    const license = shorterOfTwo(contrib.license.name, contrib.license.alternateName);
+    const under = " / ";
+    const attributionCredit = `by ${author}${under}${license}`;
+    const headline = largestPossible([
+      `"${contrib.headline}"`,
+      `"${contrib.alternativeHeadline}"`,
+      contrib.typeOfWork.name
+    ], contrib.headLineMaxSize);
+
+    const attribution = `${headline} by ${author}${under}${license}`;
+    return attribution;
+  }
+
+  const getAttributionAsTextDefault = (history , limit) => {
+    const hasSingleAuthor = _.size(listAuthors(history)) === 1;
+    if (hasSingleAuthor) {
+      return getIdealAttributionAsText(history);
+    }
+    const last = _.last(history)
+    return "";
+
+  }
 
   const getAttributionAsText = (history , limit) => {
-    const defaultAttrib = getIdealAttributionAsText(history);
+    const defaultAttrib = getAttributionAsTextDefault(history , limit);
     const useDefault = _.isNil(limit) || _.size(defaultAttrib) <= limit;
     return useDefault ? defaultAttrib :
     getShorterAttributionAsText(history, limit);
@@ -101,6 +147,8 @@ export default function (conf) {
   const objectAuditTrail = {
     shorterOfTwo,
     largestPossible,
+    onlyMajorContributions,
+    copyeditedContributionAfter,
     getAttributionAsText,
     getAttributionAsMarkdown,
     getTwitterAttribution
