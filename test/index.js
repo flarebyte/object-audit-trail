@@ -1,6 +1,7 @@
 import test from 'tape'
 import objectAuditTrail from '../src'
 const oneAuthor = require('./one-author.json')
+const secondAuthor = require('./one-author.json')
 
 /*
 See https://wiki.creativecommons.org/wiki/Best_practices_for_attribution
@@ -28,7 +29,7 @@ test('objectAuditTrail should provide attribution', (t) => {
   t.plan(1)
   const actual = tested.getAttributionAsText([oneAuthor])
   t.equal(actual,
-  'London gathering by John Smith is licensed under CC BY 4.0',
+  '"London gathering" by John Smith is licensed under CC BY 4.0',
   'as text')
 })
 
@@ -36,7 +37,7 @@ test('objectAuditTrail should provide attribution within large limit', (t) => {
   t.plan(1)
   const actual = tested.getAttributionAsText([oneAuthor], 100)
   t.equal(actual,
-  'London gathering by John Smith is licensed under CC BY 4.0',
+  '"London gathering" by John Smith is licensed under CC BY 4.0',
   'as text with large limit')
 })
 
@@ -44,7 +45,7 @@ test('objectAuditTrail should provide compact attribution', (t) => {
   t.plan(1)
   const actual = tested.getAttributionAsText([oneAuthor], 40)
   t.equal(actual,
-  'London gathering by John Smith / CC BY',
+  '"London gathering" by John Smith / CC BY',
   'compact license')
 })
 
@@ -99,8 +100,15 @@ test('objectAuditTrail should provide twitter attribution', (t) => {
   t.plan(1)
   const actual = tested.getTwitterAttribution([oneAuthor])
   t.equal(actual,
-  'London gathering by @johnsmith #CCBY: '+
+  '"London gathering" by @johnsmith #CCBY: '+
   'http:/website.com/comic-script/AAA',
   'as twitter')
+})
 
+test('objectAuditTrail should provide attribution with 2 authors', (t) => {
+  t.plan(1)
+  const actual = tested.getAttributionAsText([oneAuthor, secondAuthor])
+  t.equal(actual,
+  '"Underground" by Adele Smith is a derivative of "London gathering" by John Smith / CC BY',
+  'by 2 authors as text')
 })

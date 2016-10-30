@@ -1,0 +1,33 @@
+{
+   "headline":"Underground",
+   "description":"Script for a london gathering",
+   "url":"/comic-script/BBB",
+   "inLanguage":"en",
+   "typeOfWork":{
+      "name":"Comic Script",
+      "url":"/thing/comic-script"
+   },
+   "typeOfContribution":{
+      "name":"writing",
+      "url":"/typeOfContribution/writing"
+   },
+   "license":{
+      "url":"https://creativecommons.org/licenses/by/4.0/",
+      "description":"Creative Commons Attribution 4.0 International",
+      "name":"CC BY 4.0",
+      "twitter:hastag":"#CCBY",
+      "alternateName":"CC BY"
+   },
+   "keywords":[
+      {
+         "name":"Punk",
+         "twitter:hastag":"#punk",
+         "wikipedia:url":"punk"
+      }
+   ],
+   "author":{
+      "name":"Adele Smith",
+      "url":"/adele-smith",
+      "twitter:username":"@adelesmith"
+   }
+}

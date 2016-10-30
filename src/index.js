@@ -27,7 +27,7 @@ export default function (conf) {
     const author = last.author.name;
     const license = last.license.name;
     const under = isLicensedUnder;
-    const attribution = `${headline} by ${author}${under}${license}`;
+    const attribution = `"${headline}" by ${author}${under}${license}`;
     return attribution;
   }
 
@@ -59,8 +59,8 @@ export default function (conf) {
     }
     const maxHeadline = limit - 1 - _.size(attributionCredit);
     const headline = largestPossible([
-      last.headline,
-      last.alternativeHeadline,
+      `"${last.headline}"`,
+      `"${last.alternativeHeadline}"`,
       last.typeOfWork.name
     ], maxHeadline);
 
@@ -86,8 +86,8 @@ export default function (conf) {
   const getTwitterAttribution = (history) => {
     const last = _.last(history);
     const headline = largestPossible([
-      last.headline,
-      last.alternativeHeadline,
+      `"${last.headline}"`,
+      `"${last.alternativeHeadline}"`,
       last.typeOfWork.name
     ], 60);
     const url = `${conf.baseUrl}${last.url}`;
