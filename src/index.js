@@ -1,35 +1,22 @@
-import _ from "lodash"
+import _ from 'lodash';
+import pickAltVal from 'pick-alternate-value';
 
 /**
  * @param {Type}
  * @return {Type}
  */
 export default function (conf) {
-  const shorterOfTwo = (first, second) => {
-    if (_.isNil(second)) {
-      return first;
-    }
-    return _.size(first) < _.size(second) ? first : second;
-  };
 
-  const largestPossible = (list, maxSize) => {
-    const sizeOrZero = (n) => {
-      return _.size(n)> maxSize ? 0: _.size(n);
-    }
-    const largest = _.maxBy(list, sizeOrZero);
-    return sizeOrZero(largest) === 0 ? null : largest;
-  }
+  const onlyMajor = value => !_.includes(
+      conf.ignoreTypeOfContribution,
+      value.typeOfContribution.name);
 
-  const onlyMajor = (value) => ! _.includes(
-      conf.ignoreTypeOfContribution ,
-      value.typeOfContribution.name)
-
-  const listAuthors = (history) => _.uniqBy(_.map(history, 'author'), 'name');
-  const onlyMajorContributions = (history) => _.filter(history, onlyMajor);
+  const listAuthors = history => _.uniqBy(_.map(history, 'author'), 'name');
+  const onlyMajorContributions = history => _.filter(history, onlyMajor);
 
   const copyeditedContributionAfter = (history, url) => {
-    var edition = null;
-    for (var i =0; i< history.length; i++) {
+    let edition = null;
+    for (let i = 0; i < history.length; i += 1) {
       const ed = history[i];
       if (ed.url === url) {
         edition = ed;
@@ -38,11 +25,11 @@ export default function (conf) {
       if (edition === null) continue;
       if (onlyMajor(ed)) break;
       edition = ed;
-    };
+    }
     return edition;
-  }
+  };
 
-  const isLicensedUnder = " is licensed under "
+  const isLicensedUnder = ' is licensed under ';
   const getIdealAttributionAsText = (history) => {
     const last = _.last(history);
     const headline = last.headline;
@@ -51,7 +38,7 @@ export default function (conf) {
     const under = isLicensedUnder;
     const attribution = `"${headline}" by ${author}${under}${license}`;
     return attribution;
-  }
+  };
 
   const getIdealAttributionAsMd = (history) => {
     const last = _.last(history);
@@ -65,16 +52,16 @@ export default function (conf) {
     const attribution =
     `[${headline}](${url}) by [${author}](${authorUrl})${under}[${license}](${licenseUrl})`;
     return attribution;
-  }
+  };
 
   const getShorterAttributionAsText = (history, limit) => {
     const last = _.last(history);
     const author = shorterOfTwo(last.author.name, last.author.alternateName);
-    if (_.size(author)+3 >= limit) {
+    if (_.size(author) + 3 >= limit) {
       return null;
     }
     const license = shorterOfTwo(last.license.name, last.license.alternateName);
-    const under = " / ";
+    const under = ' / ';
     const attributionCredit = `by ${author}${under}${license}`;
     if (_.size(attributionCredit) > limit) {
       return `By ${author}`;
@@ -83,7 +70,7 @@ export default function (conf) {
     const headline = largestPossible([
       `"${last.headline}"`,
       `"${last.alternativeHeadline}"`,
-      last.typeOfWork.name
+      last.typeOfWork.name,
     ], maxHeadline);
 
     if (_.isNil(headline)) {
@@ -91,50 +78,49 @@ export default function (conf) {
     }
     const attribution = `${headline} by ${author}${under}${license}`;
     return attribution;
-  }
+  };
 
   const getOptimizedAttributionAsText = (contrib, conf) => {
     const author = shorterOfTwo(contrib.author.name, contrib.author.alternateName);
     const license = shorterOfTwo(contrib.license.name, contrib.license.alternateName);
-    const under = " / ";
+    const under = ' / ';
     const attributionCredit = `by ${author}${under}${license}`;
     const headline = largestPossible([
       `"${contrib.headline}"`,
       `"${contrib.alternativeHeadline}"`,
-      contrib.typeOfWork.name
+      contrib.typeOfWork.name,
     ], contrib.headLineMaxSize);
 
     const attribution = `${headline} by ${author}${under}${license}`;
     return attribution;
-  }
+  };
 
-  const getAttributionAsTextDefault = (history , limit) => {
+  const getAttributionAsTextDefault = (history, limit) => {
     const hasSingleAuthor = _.size(listAuthors(history)) === 1;
     if (hasSingleAuthor) {
       return getIdealAttributionAsText(history);
     }
-    const last = _.last(history)
-    return "";
+    const last = _.last(history);
+    return '';
+  };
 
-  }
-
-  const getAttributionAsText = (history , limit) => {
-    const defaultAttrib = getAttributionAsTextDefault(history , limit);
+  const getAttributionAsText = (history, limit) => {
+    const defaultAttrib = getAttributionAsTextDefault(history, limit);
     const useDefault = _.isNil(limit) || _.size(defaultAttrib) <= limit;
     return useDefault ? defaultAttrib :
     getShorterAttributionAsText(history, limit);
-  }
+  };
 
-  const getAttributionAsMarkdown = (history) => {
-    return getIdealAttributionAsMd(history);
-  }
+  const getAttributionAsMarkdown = history =>
+     getIdealAttributionAsMd(history)
+  ;
 
   const getTwitterAttribution = (history) => {
     const last = _.last(history);
     const headline = largestPossible([
       `"${last.headline}"`,
       `"${last.alternativeHeadline}"`,
-      last.typeOfWork.name
+      last.typeOfWork.name,
     ], 60);
     const url = `${conf.baseUrl}${last.url}`;
     const defAuthor = shorterOfTwo(last.author.name, last.author.alternateName);
@@ -142,16 +128,14 @@ export default function (conf) {
     const license = last.license['twitter:hastag'];
     const attribution = `${headline} by ${author} ${license}: ${url}`;
     return attribution;
-  }
+  };
 
   const objectAuditTrail = {
-    shorterOfTwo,
-    largestPossible,
     onlyMajorContributions,
     copyeditedContributionAfter,
     getAttributionAsText,
     getAttributionAsMarkdown,
-    getTwitterAttribution
-  }
+    getTwitterAttribution,
+  };
   return objectAuditTrail;
 }
