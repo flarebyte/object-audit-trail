@@ -96,7 +96,13 @@ test('objectAuditTrail should provide attribution', (t) => {
 
 test('objectAuditTrail should provide attribution within large limit', (t) => {
   t.plan(1);
-  const actual = tested.getAttributionAsText([oneAuthor], 100);
+  const opts = {
+    limit: 100,
+    strategy: 'length',
+    target: 'text',
+  };
+
+  const actual = tested.getAttributionAsText([oneAuthor], opts);
   t.equal(actual,
   '"London gathering" by John Smith is licensed under CC BY 4.0',
   'as text with large limit');
@@ -104,7 +110,12 @@ test('objectAuditTrail should provide attribution within large limit', (t) => {
 
 test('objectAuditTrail should provide compact attribution', (t) => {
   t.plan(1);
-  const actual = tested.getAttributionAsText([oneAuthor], 40);
+  const opts = {
+    limit: 40,
+    strategy: 'length',
+  };
+
+  const actual = tested.getAttributionAsText([oneAuthor], opts);
   t.equal(actual,
   '"London gathering" by John Smith / CC BY',
   'compact license');
@@ -113,7 +124,12 @@ test('objectAuditTrail should provide compact attribution', (t) => {
 
 test('objectAuditTrail should provide short attribution', (t) => {
   t.plan(1);
-  const actual = tested.getAttributionAsText([oneAuthor], 35);
+  const opts = {
+    limit: 35,
+    strategy: 'length'
+  };
+
+  const actual = tested.getAttributionAsText([oneAuthor], opts);
   t.equal(actual,
   'Comic Script by John Smith / CC BY',
   'as short text');
@@ -122,14 +138,24 @@ test('objectAuditTrail should provide short attribution', (t) => {
 test('objectAuditTrail should provide attribution with just author and license',
  (t) => {
    t.plan(1);
-   const actual = tested.getAttributionAsText([oneAuthor], 22);
+   const opts = {
+     limit: 22,
+     strategy: 'length',
+   };
+
+   const actual = tested.getAttributionAsText([oneAuthor], opts);
    t.equal(actual,
   'By John Smith / CC BY',
   'with just author and license');
  });
 test('objectAuditTrail should provide attribution with just author', (t) => {
   t.plan(1);
-  const actual = tested.getAttributionAsText([oneAuthor], 15);
+  const opts = {
+    limit: 15,
+    strategy: 'length',
+  };
+
+  const actual = tested.getAttributionAsText([oneAuthor], opts);
   t.equal(actual,
   'By John Smith',
   'with just author');
@@ -137,7 +163,12 @@ test('objectAuditTrail should provide attribution with just author', (t) => {
 
 test('objectAuditTrail should return empty null limit is too small ', (t) => {
   t.plan(1);
-  const actual = tested.getAttributionAsText([oneAuthor], 5);
+  const opts = {
+    limit: 5,
+    strategy: 'length',
+  };
+
+  const actual = tested.getAttributionAsText([oneAuthor], opts);
   t.equal(actual,
   null,
   'limit is too small');
