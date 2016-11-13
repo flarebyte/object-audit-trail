@@ -126,7 +126,7 @@ test('objectAuditTrail should provide short attribution', (t) => {
   t.plan(1);
   const opts = {
     limit: 35,
-    strategy: 'length'
+    strategy: 'length',
   };
 
   const actual = tested.getAttributionAsText([oneAuthor], opts);

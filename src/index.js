@@ -49,7 +49,7 @@ export default function (conf) {
     };
     return _.template(byAuthorAndLicenseTempl)(params);
   };
-  const byAuthorWithHeadlineTempl = '"${headline}" by ${author}${under}${license}';
+  const byAuthorWithHeadlineTempl = '${headline} by ${author}${under}${license}';
   const byAuthorWithHeadlineTemplZ = pickAltVal.discardPlaceholders(
   byAuthorWithHeadlineTempl);
 
@@ -62,6 +62,9 @@ export default function (conf) {
     };
     return _.template(byAuthorWithHeadlineTempl)(params);
   };
+
+  const quote = value => `"${value}"`;
+
   const getSingleAuthorAttributionAsText = (history, opts) => {
     const limit = _.get(opts, 'limit', 10000);
     const filterFn = list => pickAltVal.hasNoNull(list) &&
@@ -75,7 +78,9 @@ export default function (conf) {
     const altAuthor = [last.author.name, last.author.alternateName];
     const altLicense = [last.license.name, last.license.alternateName];
     const altUnder = [isLicensedUnder, ' / ', '/'];
-    const altHeadline = [last.headline, last.alternativeHeadline];
+    const altHeadline = [quote(last.headline),
+      quote(last.alternativeHeadline),
+      last.typeOfWork.name];
     const headlineByAuthor = [[byAuthorWithHeadlineTemplZ],
       altHeadline, altAuthor, altUnder, altLicense];
     const headlineByAuthorBest = bestOf(headlineByAuthor);
