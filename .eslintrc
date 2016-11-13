@@ -10,6 +10,7 @@
       devDependencies: true,
       optionalDependencies: true,
     }],
-    'no-continue': 0
+    'no-continue': 0,
+    'no-template-curly-in-string': 0
   }
 }

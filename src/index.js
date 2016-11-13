@@ -6,7 +6,6 @@ import pickAltVal from 'pick-alternate-value';
  * @return {Type}
  */
 export default function (conf) {
-
   const onlyMajor = value => !_.includes(
       conf.ignoreTypeOfContribution,
       value.typeOfContribution.name);
@@ -31,15 +30,6 @@ export default function (conf) {
 
   const isLicensedUnder = ' is licensed under ';
 
-  const getIdealAttributionAsText = (history) => {
-    const last = _.last(history);
-    const headline = last.headline;
-    const author = last.author.name;
-    const license = last.license.name;
-    const under = isLicensedUnder;
-    const attribution = `"${headline}" by ${author}${under}${license}`;
-    return attribution;
-  };
 
   const getIdealAttributionAsMd = (history) => {
     const last = _.last(history);
@@ -55,66 +45,69 @@ export default function (conf) {
     return attribution;
   };
 
-  const getShorterAttributionAsText = (history, limit) => {
+  const byAuthorTempl = 'By ${author}';
+  const byAuthorTemplZ = pickAltVal.discardPlaceholders(byAuthorTempl);
+  const byAuthorAndLicenseTempl = 'By ${author}${under}${license}';
+  const byAuthorAndLicenseTemplZ = pickAltVal.discardPlaceholders(
+    byAuthorAndLicenseTempl);
+  const byAuthorWithHeadline = '"${headline}" by ${author}${under}${license}';
+  const byAuthorWithHeadlineZ = pickAltVal.discardPlaceholders(
+  byAuthorWithHeadline);
+  const defaultOptions = { limit: 10000, strategy: 'length/priority' };
+
+  const getSingleAuthorAttributionAsText = (history, opts = defaultOptions) => {
+    const filterFn = list => pickAltVal.sumSize(list) <= opts.limit &&
+       pickAltVal.hasNoNull(list);
+    const rankFn = list => pickAltVal.sumSize(list);
+
     const last = _.last(history);
-    const author = pickAltVal.pickShortestSize([
-      last.author.name, last.author.alternateName]);
-    if (_.size(author) + 3 >= limit) {
-      return null;
+    const altAuthor = [last.author.name];
+    const altLicense = [last.license.name];
+    const altUnder = [isLicensedUnder];
+    const altHeadline = [last.headline];
+    const headlineByAuthor = [[byAuthorWithHeadlineZ],
+      altHeadline, altAuthor, altUnder, altLicense];
+    const headlineByAuthorBest =
+    pickAltVal.highestRankedCombination(headlineByAuthor, rankFn, filterFn);
+    if (!_.isNil(headlineByAuthorBest)) {
+      return _.template(byAuthorWithHeadline)({
+        headline: headlineByAuthorBest[1],
+        author: headlineByAuthorBest[2],
+        under: headlineByAuthorBest[3],
+        license: headlineByAuthorBest[4],
+      });
     }
-    const license = pickAltVal.pickShortestSize([
-      last.license.name, last.license.alternateName]);
-    const under = ' / ';
-    const attributionCredit = `by ${author}${under}${license}`;
-    if (_.size(attributionCredit) > limit) {
-      return `By ${author}`;
-    }
-    const maxHeadline = limit - 1 - _.size(attributionCredit);
-    const headline = pickAltVal.pickLongestSize([
-      `"${last.headline}"`,
-      `"${last.alternativeHeadline}"`,
-      last.typeOfWork.name,
-    ], maxHeadline);
 
-    if (_.isNil(headline)) {
-      return _.upperFirst(attributionCredit);
+
+    const byAuthorAndLicense = [[byAuthorAndLicenseTemplZ],
+      altAuthor, altUnder, altLicense,
+    ];
+    const byAuthorAndLicenseBest =
+    pickAltVal.highestRankedCombination(byAuthorAndLicense, rankFn, filterFn);
+    if (!_.isNil(byAuthorAndLicenseBest)) {
+      return _.template(byAuthorWithHeadline)({
+        author: headlineByAuthorBest[1],
+        under: headlineByAuthorBest[2],
+        license: headlineByAuthorBest[3],
+      });
     }
-    const attribution = `${headline} by ${author}${under}${license}`;
-    return attribution;
+
+
+    const byAuthor = [[byAuthorTemplZ], altAuthor];
+    const byAuthorBest =
+    pickAltVal.highestRankedCombination(byAuthor, rankFn, filterFn);
+    if (!_.isNil(byAuthorBest)) {
+      return _.template(byAuthorWithHeadline)({
+        author: headlineByAuthorBest[1],
+      });
+    }
+
+    return null;
   };
 
-  const getOptimizedAttributionAsText = (contrib) => {
-    const author = pickAltVal.pickShortestSize(
-      [contrib.author.name, contrib.author.alternateName]);
-    const license = pickAltVal.pickShortestSize(
-      [contrib.license.name, contrib.license.alternateName]);
-    const under = ' / ';
-    const attributionCredit = `by ${author}${under}${license}`;
-    const headline = pickAltVal.pickLongestSize([
-      `"${contrib.headline}"`,
-      `"${contrib.alternativeHeadline}"`,
-      contrib.typeOfWork.name,
-    ], contrib.headLineMaxSize);
-
-    const attribution = `${headline} by ${author}${under}${license}`;
-    return attribution;
-  };
-
-  const getAttributionAsTextDefault = (history) => {
-    const hasSingleAuthor = _.size(listAuthors(history)) === 1;
-    if (hasSingleAuthor) {
-      return getIdealAttributionAsText(history);
-    }
-    const last = _.last(history);
-    return '';
-  };
-
-  const getAttributionAsText = (history, limit) => {
-    const defaultAttrib = getAttributionAsTextDefault(history, limit);
-    const useDefault = _.isNil(limit) || _.size(defaultAttrib) <= limit;
-    return useDefault ? defaultAttrib :
-    getShorterAttributionAsText(history, limit);
-  };
+  const getAttributionAsText = (history, limit) =>
+     getSingleAuthorAttributionAsText(history, limit)
+  ;
 
   const getAttributionAsMarkdown = history =>
      getIdealAttributionAsMd(history)
