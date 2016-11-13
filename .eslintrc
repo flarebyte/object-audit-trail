@@ -10,5 +10,6 @@
       devDependencies: true,
       optionalDependencies: true,
     }],
+    'no-continue': 0
   }
 }

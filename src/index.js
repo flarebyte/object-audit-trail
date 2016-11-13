@@ -30,6 +30,7 @@ export default function (conf) {
   };
 
   const isLicensedUnder = ' is licensed under ';
+
   const getIdealAttributionAsText = (history) => {
     const last = _.last(history);
     const headline = last.headline;
@@ -56,18 +57,20 @@ export default function (conf) {
 
   const getShorterAttributionAsText = (history, limit) => {
     const last = _.last(history);
-    const author = shorterOfTwo(last.author.name, last.author.alternateName);
+    const author = pickAltVal.pickShortestSize([
+      last.author.name, last.author.alternateName]);
     if (_.size(author) + 3 >= limit) {
       return null;
     }
-    const license = shorterOfTwo(last.license.name, last.license.alternateName);
+    const license = pickAltVal.pickShortestSize([
+      last.license.name, last.license.alternateName]);
     const under = ' / ';
     const attributionCredit = `by ${author}${under}${license}`;
     if (_.size(attributionCredit) > limit) {
       return `By ${author}`;
     }
     const maxHeadline = limit - 1 - _.size(attributionCredit);
-    const headline = largestPossible([
+    const headline = pickAltVal.pickLongestSize([
       `"${last.headline}"`,
       `"${last.alternativeHeadline}"`,
       last.typeOfWork.name,
@@ -80,12 +83,14 @@ export default function (conf) {
     return attribution;
   };
 
-  const getOptimizedAttributionAsText = (contrib, conf) => {
-    const author = shorterOfTwo(contrib.author.name, contrib.author.alternateName);
-    const license = shorterOfTwo(contrib.license.name, contrib.license.alternateName);
+  const getOptimizedAttributionAsText = (contrib) => {
+    const author = pickAltVal.pickShortestSize(
+      [contrib.author.name, contrib.author.alternateName]);
+    const license = pickAltVal.pickShortestSize(
+      [contrib.license.name, contrib.license.alternateName]);
     const under = ' / ';
     const attributionCredit = `by ${author}${under}${license}`;
-    const headline = largestPossible([
+    const headline = pickAltVal.pickLongestSize([
       `"${contrib.headline}"`,
       `"${contrib.alternativeHeadline}"`,
       contrib.typeOfWork.name,
@@ -95,7 +100,7 @@ export default function (conf) {
     return attribution;
   };
 
-  const getAttributionAsTextDefault = (history, limit) => {
+  const getAttributionAsTextDefault = (history) => {
     const hasSingleAuthor = _.size(listAuthors(history)) === 1;
     if (hasSingleAuthor) {
       return getIdealAttributionAsText(history);
@@ -117,13 +122,15 @@ export default function (conf) {
 
   const getTwitterAttribution = (history) => {
     const last = _.last(history);
-    const headline = largestPossible([
+    const headline = pickAltVal.pickLongestSize([
       `"${last.headline}"`,
       `"${last.alternativeHeadline}"`,
       last.typeOfWork.name,
     ], 60);
     const url = `${conf.baseUrl}${last.url}`;
-    const defAuthor = shorterOfTwo(last.author.name, last.author.alternateName);
+    const defAuthor = pickAltVal.pickShortestSize(
+      [last.author.name, last.author.alternateName]
+    );
     const author = _.defaultTo(last.author['twitter:username'], defAuthor);
     const license = last.license['twitter:hastag'];
     const attribution = `${headline} by ${author} ${license}: ${url}`;
