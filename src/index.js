@@ -30,12 +30,21 @@ export default function (conf) {
 
   const isLicensedUnder = ' is licensed under ';
   const byAuthorTempl = 'By ${author}';
+  const byAuthorTemplMd = 'By [${author}](${authorUrl})';
   const byAuthorTemplZ = pickAltVal.discardPlaceholders(byAuthorTempl);
   const runByAuthorTempl = (list) => {
     const params = {
       author: list[1],
     };
     return _.template(byAuthorTempl)(params);
+  };
+
+  const runByAuthorTemplMd = (list) => {
+    const params = {
+      author: list[1],
+      authorUrl: list[2],
+    };
+    return _.template(byAuthorTemplMd)(params);
   };
   const byAuthorAndLicenseTempl = 'By ${author}${under}${license}';
   const byAuthorAndLicenseTemplZ = pickAltVal.discardPlaceholders(
@@ -65,7 +74,7 @@ export default function (conf) {
 
   const quote = value => `"${value}"`;
 
-  const getSingleAuthorAttributionAsText = (history, opts) => {
+  const getSingleAuthorAttributionAsText = (history, opts, target) => {
     const limit = _.get(opts, 'limit', 10000);
     const filterFn = list => pickAltVal.hasNoNull(list) &&
     pickAltVal.sumSize(list) <= limit;
@@ -106,15 +115,15 @@ export default function (conf) {
   };
 
   const getAttributionAsText = (history, opts) =>
-     getSingleAuthorAttributionAsText(history, opts)
+     getSingleAuthorAttributionAsText(history, opts, 'text')
   ;
 
   const getAttributionAsMarkdown = (history, opts) =>
-     getSingleAuthorAttributionAsText(history, opts)
+     getSingleAuthorAttributionAsText(history, opts, 'md')
   ;
 
   const getTwitterAttribution = (history, opts) =>
-     getSingleAuthorAttributionAsText(history, opts)
+     getSingleAuthorAttributionAsText(history, opts, 'twitter')
   ;
 
   const objectAuditTrail = {
