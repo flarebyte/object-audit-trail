@@ -188,8 +188,8 @@ test('objectAuditTrail should provide markdown attribution', (t) => {
   };
   const actual = tested.getAttribution([oneAuthor], opts);
   t.equal(actual,
-  '["London gathering"](/comic-script/AAA) by [John Smith](/john-smith)'
-  + ' is licensed under ' +
+  '["London gathering"](http:/website.com/comic-script/AAA) '
+  + 'by [John Smith](http:/website.com/john-smith) is licensed under ' +
   '[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)',
   'as markdown');
 });

@@ -112,11 +112,39 @@ const defaults = {
  * @return {Type}
  */
 export default function (conf) {
+  const uncurie = (path) => {
+    const isNilOrHttp = _.isNil(path) || _.isEmpty(path) ||
+     _.startsWith(path, 'http://') || _.startsWith(path, 'https://');
+    if (isNilOrHttp) {
+      return path;
+    }
+    const hasCurie = _.includes(path, ':');
+    if (!hasCurie) {
+      const pathSuffix = _.trimStart(path, '/');
+      const url = `${conf.baseUrl}/${pathSuffix}`;
+      return url;
+    }
+    const splitted = _.split(path, ':');
+    const prefix = _.head(splitted);
+    const unkownCurie = !_.has(conf.curies, prefix);
+    if (unkownCurie) {
+      return path;
+    }
+    const relUrl = _.tail(splitted).join(':');
+    const curieUrl = conf.curies[prefix];
+    const url = `${curieUrl}/${relUrl}`;
+    return url;
+  };
+
   const buildTemplating = (templating) => {
-    const decorePaths = list =>
-      // list.unshift('description');
-       list
-    ;
+    const decorePaths = (list, key) => {
+      const isUrl = _.endsWith(key, 'Url');
+      if (isUrl) {
+        list.unshift(uncurie);
+      }
+      return list;
+    };
+
     const props = _.mapValues(templating.props, decorePaths);
     return { props,
       templates: templating.templates,
@@ -156,30 +184,6 @@ export default function (conf) {
   const getSingleAuthorAttribution = (history, templating, limit) => {
     const last = getLastContribution(history);
     return pickAltVal.renderLongest(templating, last, limit);
-  };
-
-  const uncurie = (path) => {
-    const isNilOrHttp = _.isNil(path) || _.isEmpty(path) ||
-     _.startsWith(path, 'http://') || _.startsWith(path, 'https://');
-    if (isNilOrHttp) {
-      return path;
-    }
-    const hasCurie = _.includes(path, ':');
-    if (!hasCurie) {
-      const pathSuffix = _.trimStart(path, '/');
-      const url = `${conf.baseUrl}/${pathSuffix}`;
-      return url;
-    }
-    const splitted = _.split(path, ':');
-    const prefix = _.head(splitted);
-    const unkownCurie = !_.has(conf.curies, prefix);
-    if (unkownCurie) {
-      return path;
-    }
-    const relUrl = _.tail(splitted).join(':');
-    const curieUrl = conf.curies[prefix];
-    const url = `${curieUrl}/${relUrl}`;
-    return url;
   };
 
 
