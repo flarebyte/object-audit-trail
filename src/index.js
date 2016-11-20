@@ -1,13 +1,6 @@
 import _ from 'lodash';
 import pickAltVal from 'pick-alternate-value';
 
-const defProps = {
-  author: ['author.name', 'author.alternateName'],
-  license: ['license.name', 'license.alternateName'],
-  headline: ['headline', 'alternativeHeadline'],
-  typeOfWork: ['typeOfWork.name'],
-};
-
 const quote = str => `"${str}"`;
 
 const defaults = {
@@ -72,11 +65,23 @@ const defaults = {
 
     },
     ii: {
-      templates: [],
-      props: defProps,
+      templates: ['[{{headline1}}]({{headline1Url}}) by [{{author1}}]({{author1Url}}) is a derivative of ' +
+      '[{{headline2}}]({{headline2Url}}) by [{{author2}}]({{author2Url}}) / [{{license}}]({{licenseUrl}})'],
+      props: {
+        author1: ['i.author.name', 'i.author.alternateName'],
+        author1Url: ['i.author.url'],
+        author2: ['ii.author.name', 'ii.author.alternateName'],
+        author2Url: ['ii.author.url'],
+        license: ['r.license.name', 'r.license.alternateName'],
+        licenseUrl: ['r.license.url'],
+        headline1: [quote, 'r.headline', 'r.alternativeHeadline'],
+        headline1Url: ['r.url'],
+        headline2: [quote, 'ii.headline', 'ii.alternativeHeadline'],
+        headline2Url: ['ii.url'],
+      },
       placeholders: {
-        clean: [['({{', '}}])']],
-        extract: [['[{{', '}}]'], ['({{', '}}])']],
+        clean: [['({{', '}})']],
+        extract: [['[{{', '}}]'], ['({{', '}})']],
       },
     },
   },
@@ -98,16 +103,31 @@ const defaults = {
         typeOfWorkUrl: ['r.typeOfWork.url'],
       },
       placeholders: {
-        clean: [['({{', '}}])']],
-        extract: [['[{{', '}}]'], ['({{', '}}])']],
+        clean: [],
+        extract: [['{{', '}}']],
       },
     },
     ii: {
-      templates: [],
-      props: defProps,
+      templates: ['"{{headline1}}" by {{author1Twitter}} is a derivative of ' +
+      '"{{headline2}}" by {{author2Twitter}} {{licenseHashtag}}: {{headline1Url}}'],
+      props: {
+        author1: ['i.author.name', 'i.author.alternateName'],
+        author1Twitter: ['i.author.twitter:username'],
+        author1Url: ['i.author.url'],
+        author2: ['ii.author.name', 'ii.author.alternateName'],
+        author2Twitter: ['ii.author.twitter:username'],
+        author2Url: ['ii.author.url'],
+        license: ['r.license.name', 'r.license.alternateName'],
+        licenseUrl: ['r.license.url'],
+        licenseHashtag: ['r.license.twitter:hastag'],
+        headline1: ['r.headline', 'r.alternativeHeadline'],
+        headline1Url: ['r.url'],
+        headline2: ['ii.headline', 'ii.alternativeHeadline'],
+        headline2Url: ['ii.url'],
+      },
       placeholders: {
-        clean: [['({{', '}}])']],
-        extract: [['[{{', '}}]'], ['({{', '}}])']],
+        clean: [],
+        extract: [['{{', '}}']],
       },
     },
   },

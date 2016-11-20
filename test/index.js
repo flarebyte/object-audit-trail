@@ -215,3 +215,32 @@ test('objectAuditTrail should provide attribution with 2 authors', (t) => {
   '"alternative Headline 5" by Adele Smith is a derivative of "London gathering" by John Smith / CC BY 4.0',
   'by 2 authors as text');
 });
+
+test('objectAuditTrail should provide markdown attribution with 2 authors', (t) => {
+  t.plan(1);
+  const opts = {
+    format: 'markdown',
+  };
+  const actual = tested.getAttribution([
+    author3, oneAuthor, author4, secondAuthor, author5], opts);
+  t.equal(actual,
+  '["alternative Headline 5"](http:/website.com/comic-script/EEE) ' +
+  'by [Adele Smith](http:/website.com/adele-smith) is a derivative of ' +
+  '["London gathering"](http:/website.com/comic-script/AAA) by ' +
+  '[John Smith](http:/website.com/john-smith) / ' +
+  '[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)',
+  'by 2 authors as text');
+});
+
+test('objectAuditTrail should provide twitter attribution', (t) => {
+  t.plan(1);
+  const opts = {
+    format: 'twitter',
+  };
+  const actual = tested.getAttribution([
+    author3, oneAuthor, author4, secondAuthor, author5], opts);
+  t.equal(actual,
+  '"alternative Headline 5" by @adelesmith is a derivative of "London gathering" by @johnsmith #CCBY: ' +
+  'http:/website.com/comic-script/EEE',
+  'as twitter');
+});
