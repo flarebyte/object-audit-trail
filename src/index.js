@@ -30,8 +30,15 @@ const defaults = {
 
     },
     ii: {
-      templates: [],
-      props: defProps,
+      templates: ['"{{headline1}}" by {{author1}} is a derivative of ' +
+      '"{{headline2}}" by {{author2}} / {{license}}'],
+      props: {
+        author1: ['i.author.name', 'i.author.alternateName'],
+        author2: ['ii.author.name', 'ii.author.alternateName'],
+        license: ['r.license.name', 'r.license.alternateName'],
+        headline1: ['r.headline', 'r.alternativeHeadline'],
+        headline2: ['ii.headline', 'ii.alternativeHeadline'],
+      },
       placeholders: {
         clean: [],
         extract: [['{{', '}}']],
@@ -163,8 +170,12 @@ export default function (conf) {
       conf.ignoreTypeOfContribution,
       value.typeOfContribution.name);
 
-  const listAuthors = history => _.uniqBy(_.map(history, 'author'), 'name');
+
   const onlyMajorContributions = history => _.filter(history, onlyMajor);
+
+  const listAuthors = history => _.uniqBy(_.map(history, 'author'), 'name');
+  const hasSingleMajorContributor = history =>
+  _.size(listAuthors(onlyMajorContributions(history))) === 1;
 
   const copyeditedContributionAfter = (history, url) => {
     let edition = null;
@@ -180,10 +191,22 @@ export default function (conf) {
     }
     return edition;
   };
+
   const getLastContribution = _.last;
   const getSingleAuthorAttribution = (history, templating, limit) => {
     const last = getLastContribution(history);
     return pickAltVal.renderLongest(templating, last, limit);
+  };
+
+  const getTwoAuthorsAttribution = (history, templating, limit) => {
+    const r = _.last(history);
+    const majorContribs = onlyMajorContributions(history);
+    const i = _.last(majorContribs);
+    const lastAuthor = _.get(i, 'author.name');
+    const exceptLastAuthor = c => _.get(c, 'author.name') !== lastAuthor;
+    const contribsOther = _.filter(majorContribs, exceptLastAuthor);
+    const ii = _.last(contribsOther);
+    return pickAltVal.renderLongest(templating, { r, i, ii }, limit);
   };
 
 
@@ -192,7 +215,11 @@ export default function (conf) {
     const format = _.get(opts, 'format', 'text');
 
     const templatings = _.get(custom, format);
-    return getSingleAuthorAttribution(history, templatings.i, limit);
+    const single = hasSingleMajorContributor(history);
+    const attr = single ?
+    getSingleAuthorAttribution(history, templatings.i, limit) :
+    getTwoAuthorsAttribution(history, templatings.ii, limit);
+    return attr;
   }
   ;
 

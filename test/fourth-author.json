@@ -9,8 +9,8 @@
       "url":"/thing/comic-script"
    },
    "typeOfContribution":{
-      "name":"writing",
-      "url":"/typeOfContribution/writing"
+      "name":"minor-change",
+      "url":"/typeOfContribution/minor-change"
    },
    "license":{
       "url":"https://creativecommons.org/licenses/by/4.0/",

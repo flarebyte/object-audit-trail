@@ -208,10 +208,10 @@ test('objectAuditTrail should provide twitter attribution', (t) => {
 });
 
 test('objectAuditTrail should provide attribution with 2 authors', (t) => {
-  // t.plan(1);
-  // const actual = tested.getAttributionAsText([
-  //   author3, oneAuthor, author4, secondAuthor, author5]);
-  // t.equal(actual,
-  // '"Underground" by Adele Smith is a derivative of "London gathering" by John Smith / CC BY',
-  // 'by 2 authors as text');
+  t.plan(1);
+  const actual = tested.getAttribution([
+    author3, oneAuthor, author4, secondAuthor, author5]);
+  t.equal(actual,
+  '"alternative Headline 5" by Adele Smith is a derivative of "London gathering" by John Smith / CC BY 4.0',
+  'by 2 authors as text');
 });
