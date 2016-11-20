@@ -18,10 +18,10 @@ const defaults = {
         '{{typeOfWork}} by {{author}} / {{license}}',
         'By {{author}} / {{license}}', 'By {{author}}'],
       props: {
-        author: ['author.name', 'author.alternateName'],
-        license: ['license.name', 'license.alternateName'],
-        headline: ['headline', 'alternativeHeadline'],
-        typeOfWork: ['typeOfWork.name'],
+        author: ['i.author.name', 'i.author.alternateName'],
+        license: ['r.license.name', 'r.license.alternateName'],
+        headline: ['r.headline', 'r.alternativeHeadline'],
+        typeOfWork: ['r.typeOfWork.name'],
       },
       placeholders: {
         clean: [],
@@ -56,14 +56,14 @@ const defaults = {
         'By [{{author}}]({{authorUrl}}) / [{{license}}]({{licenseUrl}})',
         'By [{{author}}]({{authorUrl}})'],
       props: {
-        author: ['author.name', 'author.alternateName'],
-        authorUrl: ['author.url'],
-        license: ['license.name', 'license.alternateName'],
-        licenseUrl: ['license.url'],
-        headline: [quote, 'headline', 'alternativeHeadline'],
-        headlineUrl: ['url'],
-        typeOfWork: ['typeOfWork.name'],
-        typeOfWorkUrl: ['typeOfWork.url'],
+        author: ['i.author.name', 'i.author.alternateName'],
+        authorUrl: ['i.author.url'],
+        license: ['r.license.name', 'r.license.alternateName'],
+        licenseUrl: ['r.license.url'],
+        headline: [quote, 'r.headline', 'r.alternativeHeadline'],
+        headlineUrl: ['r.url'],
+        typeOfWork: ['r.typeOfWork.name'],
+        typeOfWorkUrl: ['r.typeOfWork.url'],
       },
       placeholders: {
         clean: [['({{', '}})']],
@@ -86,16 +86,16 @@ const defaults = {
         '"{{headline}}" by {{authorTwitter}} {{licenseHashtag}}: {{headlineUrl}}',
       ],
       props: {
-        author: ['author.name', 'author.alternateName'],
-        authorTwitter: ['author.twitter:username'],
-        authorUrl: ['author.url'],
-        license: ['license.name', 'license.alternateName'],
-        licenseUrl: ['license.url'],
-        licenseHashtag: ['license.twitter:hastag'],
-        headline: ['headline', 'alternativeHeadline'],
-        headlineUrl: ['url'],
-        typeOfWork: ['typeOfWork.name'],
-        typeOfWorkUrl: ['typeOfWork.url'],
+        author: ['i.author.name', 'i.author.alternateName'],
+        authorTwitter: ['i.author.twitter:username'],
+        authorUrl: ['i.author.url'],
+        license: ['r.license.name', 'r.license.alternateName'],
+        licenseUrl: ['r.license.url'],
+        licenseHashtag: ['r.license.twitter:hastag'],
+        headline: ['r.headline', 'r.alternativeHeadline'],
+        headlineUrl: ['r.url'],
+        typeOfWork: ['r.typeOfWork.name'],
+        typeOfWorkUrl: ['r.typeOfWork.url'],
       },
       placeholders: {
         clean: [['({{', '}}])']],
@@ -192,10 +192,11 @@ export default function (conf) {
     return edition;
   };
 
-  const getLastContribution = _.last;
   const getSingleAuthorAttribution = (history, templating, limit) => {
-    const last = getLastContribution(history);
-    return pickAltVal.renderLongest(templating, last, limit);
+    const r = _.last(history);
+    const majorContribs = onlyMajorContributions(history);
+    const i = _.last(majorContribs);
+    return pickAltVal.renderLongest(templating, { r, i }, limit);
   };
 
   const getTwoAuthorsAttribution = (history, templating, limit) => {
