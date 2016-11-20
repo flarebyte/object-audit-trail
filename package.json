@@ -63,6 +63,6 @@
   },
   "dependencies": {
     "lodash": "^4.16.4",
-    "pick-alternate-value": "^1.1.0"
+    "pick-alternate-value": "^1.2.0"
   }
 }
