@@ -1,0 +1,34 @@
+{
+   "headline":"headline 3",
+   "alternativeHeadline":"alternative Headline 3",
+   "description":"Script for a london gathering",
+   "url":"/comic-script/CCC",
+   "inLanguage":"en",
+   "typeOfWork":{
+      "name":"Comic Script",
+      "url":"/thing/comic-script"
+   },
+   "typeOfContribution":{
+      "name":"minor-change",
+      "url":"/typeOfContribution/minor-change"
+   },
+   "license":{
+      "url":"https://creativecommons.org/licenses/by/4.0/",
+      "description":"Creative Commons Attribution 4.0 International",
+      "name":"CC BY 4.0",
+      "twitter:hastag":"#CCBY",
+      "alternateName":"CC BY"
+   },
+   "keywords":[
+      {
+         "name":"Steam Punk",
+         "twitter:hastag":"#steampunk",
+         "wikipedia:url":"Steampunk"
+      }
+   ],
+   "author":{
+      "name":"Jack Smith",
+      "url":"/jack-smith",
+      "twitter:username":"@jacksmith"
+   }
+}
