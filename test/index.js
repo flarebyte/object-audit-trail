@@ -16,7 +16,6 @@ const tested = objectAuditTrail({
     wikipedia: 'http://wikipedia/about',
   },
   baseUrl: 'http:/website.com',
-  headLineMaxSize: 30,
   ignoreTypeOfContribution: ['minor-change'],
 });
 
@@ -194,6 +193,18 @@ test('objectAuditTrail should provide markdown attribution', (t) => {
   'as markdown');
 });
 
+test('objectAuditTrail should provide markdown attribution with limit', (t) => {
+  t.plan(1);
+  const opts = {
+    format: 'markdown',
+    limit: 22,
+  };
+  const actual = tested.getAttribution([oneAuthor], opts);
+  t.equal(actual,
+  'By [John Smith](http:/website.com/john-smith) / ' +
+  '[CC BY](https://creativecommons.org/licenses/by/4.0/)');
+});
+
 
 test('objectAuditTrail should provide twitter attribution', (t) => {
   t.plan(1);
@@ -243,4 +254,27 @@ test('objectAuditTrail should provide twitter attribution', (t) => {
   '"alternative Headline 5" by @adelesmith is a derivative of "London gathering" by @johnsmith #CCBY: ' +
   'http:/website.com/comic-script/EEE',
   'as twitter');
+});
+
+test('objectAuditTrail should provide attribution to only 1 author out of 2', (t) => {
+  const opts = {
+    limit: 40,
+  };
+  t.plan(1);
+  const actual = tested.getAttribution([
+    author3, oneAuthor, author4, secondAuthor, author5], opts);
+  t.equal(actual,
+  '"headline 5" by Adele Smith / CC BY 4.0');
+});
+
+test('objectAuditTrail should provide markdown to only 1 author out of 2', (t) => {
+  t.plan(1);
+  const opts = {
+    format: 'markdown',
+    limit: 50,
+  };
+  const actual = tested.getAttribution([
+    author3, oneAuthor, author4, secondAuthor, author5], opts);
+  t.equal(actual,
+  '');
 });

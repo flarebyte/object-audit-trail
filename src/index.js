@@ -240,9 +240,11 @@ export default function (conf) {
     const attr = single ?
     getSingleAuthorAttribution(history, templatings.i, limit) :
     getTwoAuthorsAttribution(history, templatings.ii, limit);
-    return attr;
-  }
-  ;
+
+    return _.isNil(attr) && !single ?
+     getSingleAuthorAttribution(history, templatings.i, limit) :
+     attr;
+  };
 
   const objectAuditTrail = {
     uncurie,

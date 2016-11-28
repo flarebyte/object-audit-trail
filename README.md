@@ -8,6 +8,20 @@
 
 > Object audit trail including revision and license
 
+Provide attributions based on the best practices by [Creative Commons](See https://wiki.creativecommons.org/wiki/Best_practices_for_attribution).
+However, this should also work for any kind of license.
+Please note that we are in no way related to "Creative Commons"; just happens to like their guidelines ...
+and this is a slightly opinionated interpretation.
+
+
+Features:
+* support a limit size for the attribution to cope with limited space.
+* support output format as text, markdown or twitter.
+* the template can be customized (i18n ...).
+* display the last two authors or a single one.
+* allows minor contributions to be ignored.
+
+
 ## Install
 
 ```sh
@@ -19,7 +33,25 @@ npm i -D object-audit-trail
 ```js
 import objectAuditTrail from "object-audit-trail"
 
-objectAuditTrail() // true
+const auditTrail = objectAuditTrail({
+  curies: {
+    wikipedia: 'http://wikipedia/about',
+  },
+  baseUrl: 'http:/website.com',
+  ignoreTypeOfContribution: ['minor-change'],
+});
+
+auditTrail.getAttribution(history);
+//return "alternative Headline 5" by Adele Smith is a derivative of "London gathering" by John Smith / CC BY 4.0
+
+auditTrail.getAttribution(history, {format: 'markdown'});
+//return ["alternative Headline 5"](http:/website.com/comic-script/EEE) by [Adele Smith](http:/website.com/adele-smith) is a derivative of ["London gathering"](http:/website.com/comic-script/AAA) by [John Smith](http:/website.com/john-smith) / [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+auditTrail.getAttribution(history, {format: 'twitter'});
+//return "alternative Headline 5" by @adelesmith is a derivative of "London gathering" by @johnsmith #CCBY: http:/website.com/comic-script/EEE
+
+auditTrail.getAttribution(history, {limit: 24});
+//return By Adele Smith / CC BY
 ```
 
 ## License
