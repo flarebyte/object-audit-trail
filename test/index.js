@@ -197,7 +197,7 @@ test('objectAuditTrail should provide markdown attribution with limit', (t) => {
   t.plan(1);
   const opts = {
     format: 'markdown',
-    limit: 22,
+    limit: 25,
   };
   const actual = tested.getAttribution([oneAuthor], opts);
   t.equal(actual,
@@ -276,5 +276,6 @@ test('objectAuditTrail should provide markdown to only 1 author out of 2', (t) =
   const actual = tested.getAttribution([
     author3, oneAuthor, author4, secondAuthor, author5], opts);
   t.equal(actual,
-  '');
+  '["headline 5"](http:/website.com/comic-script/EEE) by [Adele Smith](http:/website.com/adele-smith)' +
+  ' / [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)');
 });

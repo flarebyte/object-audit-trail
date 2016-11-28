@@ -60,7 +60,7 @@ const defaults = {
       },
       placeholders: {
         clean: [['({{', '}})']],
-        extract: [['[{{', '}}]'], ['({{', '}})']],
+        extract: [['[{{', '}}]']],
       },
 
     },
